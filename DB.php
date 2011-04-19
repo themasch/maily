@@ -8,7 +8,7 @@ class DB {
     
     /**
      *
-     * @return PDO
+     * @return PDOConnection
      */
     public static function getConnection()
     {

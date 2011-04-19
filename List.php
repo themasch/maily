@@ -33,13 +33,20 @@ class mList
         $this->data = $data;
     }
     
-    public function getConfig($key)
+    public function getConfig($key, $default=null)
     {
         $query = 'SELECT `value` FROM `list_config` WHERE `list` = :id AND `name` = :key';
         $con = DB::getConnection();
         $stmt = $con->prepare($query);
         $stmt->execute(array(':id' => $this->getID(), 
                              ':key' => $key));
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if($row !== false) {
+            return $row['value'];
+        } else {
+            return $default;
+        }
         
     }
     
@@ -58,7 +65,11 @@ class mList
         $con = DB::getConnection();
         $stmt = $con->prepare($qry);
         $stmt->execute(array(':id' => $this->getID()));
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $targets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $list = array();
+        foreach($targets as $t) {
+            $list[] = $t['address'];
+        }
     }   
 
     /**

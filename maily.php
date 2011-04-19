@@ -1,21 +1,26 @@
 #!/bin/env php
 <?php
-require_once './DB.php';
-require_once './Log.php';
-require_once './List.php';
-require_once './Config.php';
-require_once './Mail.php';
+define('BASE', __DIR__);
+require_once BASE.'/Maily.php';
 
 define('VERSION', '0.1');
 
 $cfg = Config::readConfig('./maily.cfg');
-$default_log = array('targets' => array(array('type' => 'echo')));
-
 
 $sender = trim(isset($argv[1]) ? $argv[1] : "");
 $list   = trim(isset($argv[2]) ? $argv[2] : "");
 
-if($sender == '--transport-map') {
+$maily = new Maily();
+if($sender == '--transport-map' || $sender == '-m') {
+    $maily->generateTransportMap($list);
+} else {
+    $msg = file_get_contents('php://stdin');
+    $maily->handleMail($sender, $list, $msg);
+}
+
+
+/*
+ * if($sender == '--transport-map') {
     $file = $list;
     $start = '########## Maily start ##########'.PHP_EOL;
     $end   = '########## Maily end ############'.PHP_EOL;
@@ -82,3 +87,4 @@ if($sender == '--transport-map') {
 
     $mail->send($bcc);
 }
+***/

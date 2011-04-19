@@ -1,0 +1,8 @@
+{
+    "log": {
+        "targets": [
+           { "type": "echo", "level": ["info", "warn" ] },
+           { "type": "stderr", "level": ["err"] }
+        ]
+    }
+}

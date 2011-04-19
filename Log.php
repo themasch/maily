@@ -1,21 +1,47 @@
 <?php
 require_once './FileLogger.php';
 require_once './EchoLogger.php';
+require_once './StdErrLogger.php';
+
 /**
- * logger
+ * small logger 
+ *
+ * @package Maily
  * @author Mark Schmale
  */
 class Log {
-    
+
+    // Log Level
+    const INFO = 'info';
+    const WARN = 'warn';
+    const ERROR = 'err';
+
+    /**
+     * list of all loggers sorted by level
+     * @var array(array(Logger))
+     */
     protected static $targets = array();
+
+    /**
+     * variable to check is the Loggers are closed
+     * @var bool
+     */
     protected static $closed = false;
-    
+   
+    /**
+     * initializes the logger
+     *
+     * @param array $config an array for configuration 
+     */
     public static function setUp(array $config)
     {
-        if(!isset($config['targets']))
+        if(!isset($config['targets'])) {
             return;
+        }
+
         foreach($config['targets'] as $target) {
             $t = null;
+
             // TODO: DYNAMIC!
             switch ($target['type']) {
                 case 'file':
@@ -24,23 +50,62 @@ class Log {
                 case 'echo':
                     $t = new EchoLogger();
                     break;
+                case 'stderr':
+                    $t = new StdErrLogger();
+                    break;
             }
             
             if($t != null) {
-                self::$targets[] = $t;
+                self::appendLogger($target['level'], $t);
+            }
+        }
+    }
+
+    /**
+     * appends a logger to one or multiple log levels
+     *
+     * @param string|array $level log level
+     * @param Logger       $logger the logger
+     */
+    public static function appendLogger($level, Logger $logger) 
+    {
+        if(is_array($level)) {
+            // array, call for every entry
+            foreach($level as $l) {
+                self::appendLogger($l, $logger);
+            }
+        } else {
+            // no array, append logger
+            if(!isset(self::$targets[$level]) || !is_array(self::$targets[$level])) {
+                self::$targets[$level] = array();
+            }
+            self::$targets[$level][] = $logger;
+        }
+    }
+    
+    /**
+     * writes a log message to the selected targets
+     * 
+     * @param mixed    $msg     Message that should be logged
+     * @param stroing  $level   Log Level. Defaults to INFO
+     */
+    public static function write($msg, $level=Log::INFO)
+    {
+        if(!isset(self::$targets[$level]) || 
+           !is_array(self::$targets[$level]) ) {
+            return;
+        }
+
+        foreach(self::$targets[$level] as $t) {
+            if($t instanceof Logger) {
+                $t->write($msg);
             }
         }
     }
     
-    public static function write($msg)
-    {
-        foreach(self::$targets as $t) 
-        {
-            if($t instanceof Logger)
-                $t->write($msg);
-        }
-    }
-    
+    /**
+     * closes all loggers
+     */
     public static function close()
     {
         foreach(self::$targets as $t)
@@ -50,5 +115,3 @@ class Log {
         }
     }
 }
-
-?>
