@@ -1,5 +1,5 @@
 <?php
-require_once './Logger.php';
+require_once BASE.'/Logger.php';
 /**
  * 
  * @author masch
@@ -13,7 +13,7 @@ class FileLogger implements Logger {
         if(!is_writable($path)) {
             throw new RuntimeException('logtarget "'.$path.'" is not writeable');
         }
-        $fp = fopen($path, 'a');
+        $this->fp = fopen($path, 'a');
     }
 
     public function write($msg)
@@ -23,7 +23,7 @@ class FileLogger implements Logger {
             var_dump($msg);
             $msg = ob_get_clean();
         }
-        fwrite($this->fp, '['.date('d.m.Y H:i:s').']'.$msg);
+        fwrite($this->fp, '['.date('d.m.Y H:i:s').']'.$msg.PHP_EOL);
     }
     
     public function close()

@@ -1,7 +1,7 @@
 <?php
-require_once './FileLogger.php';
-require_once './EchoLogger.php';
-require_once './StdErrLogger.php';
+require_once BASE.'/FileLogger.php';
+require_once BASE.'/EchoLogger.php';
+require_once BASE.'/StdErrLogger.php';
 
 /**
  * small logger 

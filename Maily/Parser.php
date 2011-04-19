@@ -123,8 +123,9 @@ class Parser {
         if(isset($heada['content-type']) &&
             strpos($heada['content-type'], 'multipart/') === 0) {
             $ct = $heada['content-type'];
-            preg_match('(boundary=(.*))', $ct, $matches);
+            preg_match('(boundary=([^;]*))', $ct, $matches);
             $boundary = trim($matches[1], '"' );
+	    Log::write('BOUNDARY: '.$boundary);
 
             $parts = explode('--'.$boundary, $body);
             $content = array_shift($parts);

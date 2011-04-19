@@ -1,6 +1,6 @@
 <?php
 
-require_once './DB.php';
+require_once BASE.'/DB.php';
 
 class mList 
 {
@@ -70,6 +70,7 @@ class mList
         foreach($targets as $t) {
             $list[] = $t['address'];
         }
+	return $list;
     }   
 
     /**

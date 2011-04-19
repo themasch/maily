@@ -15,9 +15,8 @@
  * @filesource
  */
 
-require_once __DIR__.'/../Transport.php';
-
 namespace Maily\Transport;
+require_once __DIR__.'/../Transport.php';
 
 /**
  * smtp mail transports
@@ -43,30 +42,30 @@ class SMTP implements \Maily\Transport
 
     public function connect()
     {
-        $con = fsockopen($this->host, $this->port, &$errno, &$errstr);
+        $this->con = fsockopen($this->host, $this->port);
     }
 
 
     public function disconnect()
     {
-        fclose($con);
+        fclose($this->con);
     }
 
-    public function send(MessagePart $send, array $to, $from)
+    public function send(\MessagePart $send, array $to, $from)
     {
         try {
             $this->readResponse();
-            $this->sendCommand('HELO '.$this->domain, array('250'));
-            $this->sendCommand('MAIL FROM: '.$from, array('250'));
+            $this->execCommand('HELO '.$this->domain, array('250'));
+            $this->execCommand('MAIL FROM: '.$from, array('250'));
             foreach($to as $addr) {
-                $this->sendCommand('RCPT TO: '.$to, array('250'));
+                $this->execCommand('RCPT TO: '.$addr, array('250'));
             }
-            $this->sendCommand('DATA', array('354'));
-            $this->sendCommand($send->__toString()."\r\n.\r\n");
-            $this->sendCommand('QUIT', array('221'));
+            $this->execCommand('DATA', array('354'));
+            $this->execCommand($send->__toString()."\r\n.\r\n", array('250'));
+            $this->execCommand('QUIT', array('221'));
         }
         catch(\RuntimeException $ex) {
-            Log::write($ex->getMessage(), Log::ERROR);
+            \Log::write($ex->getMessage(), \Log::ERROR);
         }
 
     }
@@ -75,8 +74,10 @@ class SMTP implements \Maily\Transport
     {
         $this->sendCommand($cmd);
         $resp = $this->readResponse();
+	\Log::write(is_array($resp) ? 'resp okay' : 'resp failed');
         $line = array_pop($resp);
         if(in_array(substr($line, 0,3), $codes)) {
+	    \Log::write('resp is expected');
             return true;
         } else {
             throw new \RuntimeException('invalid return: '.PHP_EOL. implode(PHP_EOL, $resp));
@@ -85,7 +86,8 @@ class SMTP implements \Maily\Transport
 
     protected function sendCommand($cmd)
     {
-        return fwrite($this->con."\r\n", $cmd);
+    	\Log::write('SENT COMMAND: '.$cmd);
+        return fwrite($this->con, $cmd."\r\n");
     }
 
     protected function readResponse()
@@ -95,15 +97,18 @@ class SMTP implements \Maily\Transport
             $line   = $this->readLine();
             $resp[] = $line;
         } while($line !== null && $line !== false && $line[3] !== ' ');
+	\Log::write(gettype($resp));
+	\Log::write($resp);
         return $resp;
     }
 
     protected function readLine()
     {
         $line = false;
-        if(!feof($this->con)) {
+//        if(!feof($this->con)) {
             $line = fgets($this->con);
-        }
+ //       }
+ 	\Log::write('LINE: '.$line);
         return $line;
     }
 }

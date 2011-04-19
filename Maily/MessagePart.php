@@ -79,10 +79,14 @@ class MessagePart {
      */
     public function clearHeader(array $keep=array())
     {
-        if(!is_array()) {
+        if(!is_array($keep)) {
             throw new InvalidArgumentException('expected array, got '.gettype($keep));
         }
-        $this->header = array();
+	$backup = array();
+	foreach($keep as $k) {
+	    $backup[$k] = $this->header[$k];
+	}
+	$this->header = $backup;
     }
 
     /**
@@ -122,12 +126,17 @@ class MessagePart {
      */
     protected function capHeader($t)
     {
-        $parts = explode('-', $t);
-        $head = '';
-        foreach($parts as $p) {
-            $head .= ucfirst($p).'-';
+    	switch($t) {
+	    case 'mime-version':
+	        return 'MIME-Version';
+	    default: 
+            $parts = explode('-', $t);
+            $head = '';
+            foreach($parts as $p) {
+                $head .= ucfirst($p).'-';
+            }
+            return trim($head, '-');
         }
-        return trim($head, '-');
     }
 
     /**
@@ -155,7 +164,7 @@ class MessagePart {
         if(isset($this->header['content-type']) &&
             strpos($this->header['content-type'], 'multipart/') === 0) {
             $ct = $this->header['content-type'];
-            preg_match('(boundary=(.*))', $ct, $matches);
+            preg_match('(boundary=([^;]*))', $ct, $matches);
             $boundary = trim($matches[1], '"' );
             foreach($this->body as $part) {
                 $body .= '--'.$boundary.$le;

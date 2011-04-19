@@ -15,6 +15,8 @@
  * @filesource
  */
 
+namespace Maily;
+
 /**
  * interface for transports
  *
@@ -23,6 +25,6 @@
  * @version 0.1
  */
 interface Transport {
-    public function send(MessagePart $msg);
+    public function send(\MessagePart $send, array $to, $from);
 }
 ?>

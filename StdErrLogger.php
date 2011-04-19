@@ -1,5 +1,5 @@
 <?php
-require_once './Logger.php';
+require_once  BASE.'/Logger.php';
 /**
  * @author Mark Schmale <masch@masch.it>
  */

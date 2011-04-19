@@ -45,11 +45,14 @@ class Maily
         }
 
         try {
+	    Log::write($msg);
             $p = new Parser();
             $p->setContent($msg);
             $msg = $p->parse();
 
-            $keep = array('from', 'content-type', 'subject', 'mime-version');
+	    Log::write($msg);
+
+            $keep = array('from', 'content-type', 'subject', 'mime-version', 'content-transfer-encoding');
             $msg->clearHeader($keep);
             $msg->setHeader('to', $list->__toString());
 

@@ -13,6 +13,10 @@ class Config {
         $default = json_decode(file_get_contents(__DIR__.'/config.default.json'), true);
         $local   = json_decode(file_get_contents($path), true);
         $mix = $default;
+	if(!is_array($local)) {
+	    echo 'invalid config file'.PHP_EOL;
+	    exit(255);
+	}
         foreach($local as $k => $v) {
             $mix[$k] = $v;
         }
