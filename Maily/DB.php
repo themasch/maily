@@ -1,5 +1,7 @@
 <?php
 
+namespace Maily;
+
 require_once BASE.'/Config.php';
 
 class DB {
@@ -8,7 +10,7 @@ class DB {
     
     /**
      *
-     * @return PDOConnection
+     * @return PDO
      */
     public static function getConnection()
     {

@@ -11,9 +11,12 @@ class StdErr implements Logger {
 
     public function write($msg)
     {
-        if(!is_string($msg))
-            $msg = print_r($msg, true);
-
+        if(!is_string($msg)) {
+            ob_start();
+            var_dump($msg);
+            $msg = ob_get_contents();
+            ob_end_clean();   
+        }
         file_put_contents("php://stderr", $msg, FILE_APPEND);
 
     }

@@ -25,8 +25,8 @@ class ListModel
             return false;
         }
         if($result_cnt > 1) {
-            \Log::write('found more then one list with the following address: "'.$mailaddr.'"', \Log::WARN);
-            \Log::write('maily will use the first, but please make your checks', \Log::WARN);
+            Log::write('found more then one list with the following address: "'.$mailaddr.'"', Log::WARN);
+            Log::write('maily will use the first, but please make your checks', Log::WARN);
         }
         if($result_cnt >= 1) {
             return new mList($result[0]);

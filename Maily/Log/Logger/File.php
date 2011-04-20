@@ -6,7 +6,7 @@ use Maily\Log;
 require_once BASE.'/Logger.php';
 /**
  * 
- * @author masch
+ * @author Mark Schmale <masch@masch.it>
  */
 class File implements Logger {
     
@@ -15,23 +15,30 @@ class File implements Logger {
     public function __construct($path)
     {
         if(!is_writable($path)) {
-            throw new RuntimeException('logtarget "'.$path.'" is not writeable');
+            throw new RuntimeException('log file "'.$path.'" is not writeable');
         }
-        $this->fp = fopen($path, 'a');
+        $this->fp = @fopen($path, 'a');
+        if($this->fp === false) {
+            throw new RuntimeException('can`t open log file: '.$path);
+        }
     }
 
     public function write($msg)
     {
+        if($this->fp === false) return;
         if(!is_string($msg)) {
             ob_start();
             var_dump($msg);
             $msg = ob_get_clean();
         }
-        fwrite($this->fp, '['.date('d.m.Y H:i:s').']'.$msg.PHP_EOL);
+        $lines = explode("\n", $msg);
+        foreach($lines as $line) {
+            fwrite($this->fp, '['.date('d.m.Y H:i:s').']'.$line.PHP_EOL);
+        }
     }
     
     public function close()
     {
-        fclose($fp);
+        fclose($this->fp);
     }
 }
