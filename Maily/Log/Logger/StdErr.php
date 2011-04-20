@@ -1,9 +1,13 @@
 <?php
+
+namespace Maily\Log\Logger;
+use Maily\Log;
+
 require_once  BASE.'/Logger.php';
 /**
  * @author Mark Schmale <masch@masch.it>
  */
-class StdErrLogger implements Logger {
+class StdErr implements Logger {
 
     public function write($msg)
     {

@@ -1,7 +1,12 @@
 <?php
-require_once BASE.'/FileLogger.php';
-require_once BASE.'/EchoLogger.php';
-require_once BASE.'/StdErrLogger.php';
+
+namespace Maily;
+use Maily\Log;
+
+require_once __DIR__.'/Logger.php';
+require_once __DIR__.'/Logger/File.php';
+require_once __DIR__.'/Logger/StdOut.php';
+require_once __DIR__.'/Logger/StdErr.php';
 
 /**
  * small logger 
@@ -45,13 +50,13 @@ class Log {
             // TODO: DYNAMIC!
             switch ($target['type']) {
                 case 'file':
-                    $t = new FileLogger($target['path']);
+                    $t = new Logger\File($target['path']);
                     break;
                 case 'echo':
-                    $t = new EchoLogger();
+                    $t = new Logger\StdOut();
                     break;
                 case 'stderr':
-                    $t = new StdErrLogger();
+                    $t = new Logger\StdErr();
                     break;
             }
             

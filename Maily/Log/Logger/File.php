@@ -1,10 +1,14 @@
 <?php
+
+namespace Maily\Log\Logger;
+use Maily\Log;
+
 require_once BASE.'/Logger.php';
 /**
  * 
  * @author masch
  */
-class FileLogger implements Logger {
+class File implements Logger {
     
     protected $fp;
     

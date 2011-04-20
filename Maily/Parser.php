@@ -11,9 +11,11 @@
  * @author  Mark Schmale <masch@masch.it>
  * @license Beerware
  * @package Maily
- * @version 0.1
+ * @version 0.2
  * @filesource
  */
+
+namespace Maily;
 
 require_once __DIR__.'/MessagePart.php';
 

@@ -1,8 +1,10 @@
 <?php
 
+namespace Maily;
+
 require_once BASE.'/DB.php';
 
-class mList 
+class ListModel 
 {
 
     protected $data;
@@ -17,7 +19,18 @@ class mList
         $con = DB::getConnection();
         $stmt = $con->prepare('SELECT * FROM `list` WHERE `address` = :lst LIMIT 1');
         $stmt->execute(array(':lst' => $mailaddr));
-        return new mList($stmt->fetch(PDO::FETCH_ASSOC));
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result_cnt = count($result);
+        if($result_cnt == 0) {
+            return false;
+        }
+        if($result_cnt > 1) {
+            \Log::write('found more then one list with the following address: "'.$mailaddr.'"', \Log::WARN);
+            \Log::write('maily will use the first, but please make your checks', \Log::WARN);
+        }
+        if($result_cnt >= 1) {
+            return new mList($result[0]);
+        }
     }
 
     public static function getAll() 
@@ -57,6 +70,11 @@ class mList
     public function getID()
     {
         return (int)$this->data['id'];
+    }
+    
+    public function getAddress() 
+    {
+        return $this->data['address'];
     }
     
     public function getTargets()
