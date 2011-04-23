@@ -14,6 +14,7 @@
  * @version 0.1
  * @filesource
  */
+ namespace Maily;
 
 /**
  * a MIME message part
@@ -84,7 +85,9 @@ class MessagePart {
         }
 	$backup = array();
 	foreach($keep as $k) {
-	    $backup[$k] = $this->header[$k];
+	    if(isset($this->header[$k])) {
+		    $backup[$k] = $this->header[$k];
+	    }
 	}
 	$this->header = $backup;
     }

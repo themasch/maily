@@ -15,11 +15,11 @@ class File implements Logger {
     public function __construct($path)
     {
         if(!is_writable($path)) {
-            throw new RuntimeException('log file "'.$path.'" is not writeable');
+            throw new \RuntimeException('log file "'.$path.'" is not writeable');
         }
         $this->fp = @fopen($path, 'a');
         if($this->fp === false) {
-            throw new RuntimeException('can`t open log file: '.$path);
+            throw new \RuntimeException('can`t open log file: '.$path);
         }
     }
 

@@ -53,7 +53,7 @@ class Maily
             else 
                 Maily\Log::write('file "'.$file.'" is not readable'.PHP_EOL, Maily\Log::ERROR);
         }
-        $lists = mList::getAll();
+        $lists = Maily\ListModel::getAll();
         $txt = '';
         foreach($lists as $m) {
             $txt .= $m['address'].' maily;'.PHP_EOL;
@@ -71,6 +71,7 @@ class Maily
     public function handleMail($from, $to, $msg)
     {
         $list = Maily\ListModel::lookUp($to);
+	Maily\Log::write('list: "'.$list->__toString().'"');
 
         if(!$list->canSend($from)) {
             Maily\Log::write('['.$list->__toString().'] sender not authorized: "'.$from.'"', Maily\Log::ERROR);
@@ -78,9 +79,11 @@ class Maily
         }
 
         try {
+            Maily\Log::write('['.$list->__toString().'] accepted mail');
             $p = new Maily\Parser();
             $p->setContent($msg);
             $msg = $p->parse();
+            Maily\Log::write('['.$list->__toString().'] mail parsed');
 
 	    $keep = array(  
                             'from', 
@@ -109,11 +112,14 @@ class Maily
                     unset($targets[$k]);
                 }
             }
+            Maily\Log::write('['.$list->__toString().'] targets: ' . print_r($targets, true));
 
             // send the mail
             $t = new Maily\Transport\SMTP();
             $t->connect();
+            Maily\Log::write('['.$list->__toString().'] connected to smtp');
             $t->send($msg, $targets, $from);
+            Maily\Log::write('['.$list->__toString().'] message sent');
             $t->disconnect();
             Maily\Log::write('['.$list->__toString().'] mail from "'.$from.'" has been sent to the list');
         }

@@ -15,9 +15,13 @@
  * @filesource
  */
 
+
 namespace Maily\Transport;
+use Maily\Log;
+use Maily\MessagePart;
 require_once __DIR__.'/../Transport.php';
 
+define('SMTP_DEBUG', false);
 /**
  * smtp mail transports
  *
@@ -51,7 +55,7 @@ class SMTP implements \Maily\Transport
         fclose($this->con);
     }
 
-    public function send(\MessagePart $send, array $to, $from)
+    public function send(MessagePart $send, array $to, $from)
     {
         try {
             $this->readResponse();
@@ -65,7 +69,7 @@ class SMTP implements \Maily\Transport
             $this->execCommand('QUIT', array('221'));
         }
         catch(\RuntimeException $ex) {
-            \Log::write($ex->getMessage(), \Log::ERROR);
+            Log::write($ex->getMessage(), Log::ERROR);
         }
 
     }
@@ -74,10 +78,10 @@ class SMTP implements \Maily\Transport
     {
         $this->sendCommand($cmd);
         $resp = $this->readResponse();
-	\Log::write(is_array($resp) ? 'resp okay' : 'resp failed');
+	if(SMTP_DEBUG) Log::write(is_array($resp) ? 'resp okay' : 'resp failed');
         $line = array_pop($resp);
         if(in_array(substr($line, 0,3), $codes)) {
-	    \Log::write('resp is expected');
+	    if(SMTP_DEBUG) Log::write('resp is expected');
             return true;
         } else {
             throw new \RuntimeException('invalid return: '.PHP_EOL. implode(PHP_EOL, $resp));
@@ -86,7 +90,7 @@ class SMTP implements \Maily\Transport
 
     protected function sendCommand($cmd)
     {
-    	\Log::write('SENT COMMAND: '.$cmd);
+    	if(SMTP_DEBUG) Log::write('SENT COMMAND: '.$cmd);
         return fwrite($this->con, $cmd."\r\n");
     }
 
@@ -97,19 +101,18 @@ class SMTP implements \Maily\Transport
             $line   = $this->readLine();
             $resp[] = $line;
         } while($line !== null && $line !== false && $line[3] !== ' ');
-	\Log::write(gettype($resp));
-	\Log::write($resp);
+	if(SMTP_DEBUG) Log::write('readResponse:' );
+	if(SMTP_DEBUG) Log::write(gettype($resp));
+	if(SMTP_DEBUG) Log::write($resp);
         return $resp;
     }
 
     protected function readLine()
     {
+ 	if(SMTP_DEBUG) Log::write('READLINE: ');
         $line = false;
-//        if(!feof($this->con)) {
-            $line = fgets($this->con);
- //       }
- 	\Log::write('LINE: '.$line);
+        $line = fgets($this->con);
+ 	if(SMTP_DEBUG) Log::write('LINE: '.$line);
         return $line;
     }
 }
-?>

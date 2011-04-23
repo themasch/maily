@@ -12,14 +12,14 @@ class ListModel
     /**
      *
      * @param string $mailaddr
-     * @return mList 
+     * @return ListModel 
      */
     public static function lookUp($mailaddr) 
     {
         $con = DB::getConnection();
         $stmt = $con->prepare('SELECT * FROM `list` WHERE `address` = :lst LIMIT 1');
         $stmt->execute(array(':lst' => $mailaddr));
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         $result_cnt = count($result);
         if($result_cnt == 0) {
             return false;
@@ -29,7 +29,7 @@ class ListModel
             Log::write('maily will use the first, but please make your checks', Log::WARN);
         }
         if($result_cnt >= 1) {
-            return new mList($result[0]);
+            return new ListModel($result[0]);
         }
     }
 
@@ -38,7 +38,7 @@ class ListModel
         $con = DB::getConnection();
         $stmt = $con->prepare('SELECT `address`  FROM `list`');
         $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     protected function __construct($data) 
@@ -53,7 +53,7 @@ class ListModel
         $stmt = $con->prepare($query);
         $stmt->execute(array(':id' => $this->getID(), 
                              ':key' => $key));
-        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        $row = $stmt->fetch(\PDO::FETCH_ASSOC);
 
         if($row !== false) {
             return $row['value'];
@@ -83,7 +83,7 @@ class ListModel
         $con = DB::getConnection();
         $stmt = $con->prepare($qry);
         $stmt->execute(array(':id' => $this->getID()));
-        $targets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $targets = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         $list = array();
         foreach($targets as $t) {
             $list[] = $t['address'];

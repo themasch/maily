@@ -127,7 +127,6 @@ class Parser {
             $ct = $heada['content-type'];
             preg_match('(boundary=([^;]*))', $ct, $matches);
             $boundary = trim($matches[1], '"' );
-	    Log::write('BOUNDARY: '.$boundary);
 
             $parts = explode('--'.$boundary, $body);
             $content = array_shift($parts);
