@@ -1,9 +1,9 @@
 <?php
 
 namespace Maily\Log\Logger;
-use Maily\Log;
+use Maily\Log\Logger;
 
-require_once  BASE.'/Logger.php';
+require_once  __DIR__.'/../Logger.php';
 /**
  * @author Mark Schmale <masch@masch.it>
  */

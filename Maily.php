@@ -14,12 +14,13 @@
  * @version 0.2
  * @filesource
  */
-require_once BASE.'/DB.php';
-require_once BASE.'/Log.php';
-require_once BASE.'/List.php';
-require_once BASE.'/Config.php';
-require_once BASE.'/Maily/Parser.php';
-require_once BASE.'/Maily/Transport/SMTP.php';
+require_once __DIR__.'/Maily/DB.php';
+require_once __DIR__.'/Maily/Log.php';
+require_once __DIR__.'/Maily/List.php';
+require_once __DIR__.'/Maily/Config.php';
+require_once __DIR__.'/Maily/Parser.php';
+require_once __DIR__.'/Maily/Transport/SMTP.php';
+
 
 /**
  * main class of maily
@@ -33,8 +34,8 @@ class Maily
     protected $version = '0.2';
 
     public function  __construct($path) {
-        $cfg = Config::readConfig($path);
-        Log::setUp($cfg['log']);
+        $cfg = Maily\Config::readConfig($path);
+        Maily\Log::setUp($cfg['log']);
     }
 
     /**
@@ -50,7 +51,7 @@ class Maily
             if(is_readable($file)) 
                 $raw = file_get_contents($file); 
             else 
-                Log::write('file "'.$file.'" is not readable'.PHP_EOL, Log::ERROR);
+                Maily\Log::write('file "'.$file.'" is not readable'.PHP_EOL, Maily\Log::ERROR);
         }
         $lists = mList::getAll();
         $txt = '';
@@ -72,7 +73,7 @@ class Maily
         $list = Maily\ListModel::lookUp($to);
 
         if(!$list->canSend($from)) {
-            Log::write('['.$list->__toString().'] sender not authorized: "'.$from.'"', Log::ERROR);
+            Maily\Log::write('['.$list->__toString().'] sender not authorized: "'.$from.'"', Maily\Log::ERROR);
             return false;
         }
 
@@ -114,11 +115,11 @@ class Maily
             $t->connect();
             $t->send($msg, $targets, $from);
             $t->disconnect();
-            Log::write('['.$list->__toString().'] mail from "'.$from.'" has been sent to the list');
+            Maily\Log::write('['.$list->__toString().'] mail from "'.$from.'" has been sent to the list');
         }
         catch(Exception $e) {
-            Log::write($e->getMessage(), Log::ERROR);
-            Log::write($e->getTraceAsString(), Log::ERROR);
+            Maily\Log::write($e->getMessage(), Maily\Log::ERROR);
+            Maily\Log::write($e->getTraceAsString(), Maily\Log::ERROR);
         }
         
     }

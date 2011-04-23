@@ -2,7 +2,7 @@
 
 namespace Maily;
 
-require_once BASE.'/Config.php';
+require_once __DIR__.'/Config.php';
 
 class DB {
 

@@ -1,12 +1,13 @@
 <?php
 
 namespace Maily;
+use Maily\Log\Logger;
 use Maily\Log;
 
-require_once __DIR__.'/Logger.php';
-require_once __DIR__.'/Logger/File.php';
-require_once __DIR__.'/Logger/StdOut.php';
-require_once __DIR__.'/Logger/StdErr.php';
+require_once __DIR__.'/Log/Logger.php';
+require_once __DIR__.'/Log/Logger/File.php';
+require_once __DIR__.'/Log/Logger/StdOut.php';
+require_once __DIR__.'/Log/Logger/StdErr.php';
 
 /**
  * small logger 

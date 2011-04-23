@@ -2,7 +2,7 @@
 
 namespace Maily;
 
-require_once BASE.'/DB.php';
+require_once __DIR__.'/DB.php';
 
 class ListModel 
 {
